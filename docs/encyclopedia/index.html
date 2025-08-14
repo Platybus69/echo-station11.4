@@ -1,17 +1,70 @@
-<!doctype html><html><head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Echo Station Encyclopedia</title>
-<style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel="stylesheet" href="../assets/style.css">
-<link rel="search" type="application/opensearchdescription+xml" href="../opensearch.xml" title="Echo Station Search">
-</head><body class="dark"><header><main>
-  <div style="padding:12px 0;display:flex;gap:12px;align-items:center;justify-content:space-between">
-    <strong>Echo Station · Encyclopedia</strong>
-    <a class="small" href="../feed.json">feed</a>
-  </div>
-  <input class="search" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" />
-</main></header><main>
-  <div id="search-results" class="grid"></div>
+<!doctype html><html lang="en"><head>
+<meta charset="utf-8">
+<title>Echo Station · Encyclopedia</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style id="inline-dark-fallback">
+  html,body{background:#0b0b0b;color:#e6e6e6;margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
+  a{color:#9fd2ff} input{background:#111;color:#e6e6e6;border:1px solid #333;padding:.5rem .75rem;border-radius:6px;width:100%}
+</style>
+<link rel="canonical" href="./index.html">
+<link rel="stylesheet" href="../assets/style.css">
+</head>
+<body class="dark">
+<main style="max-width:900px;margin:3rem auto;padding:0 1rem">
+  <h1>Echo Station · Encyclopedia</h1>
+  <input id="q" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" autocomplete="off">
+  <ul id="items" style="margin-top:1rem;list-style:disc;padding-left:1.25rem"></ul>
 </main>
-<footer><main class="small">Type <code>/</code> to focus search · <code>Esc</code> to clear</main></footer>
-<script src="../assets/search.js"></script>
+<script>
+(function(){
+  const qEl = document.getElementById('q');
+  const list = document.getElementById('items');
+  const base = location.pathname.split('/encyclopedia/')[0];
+  const urls = [`${base}/encyclopedia/search.json`, `${base}/encyclopedia/index.json`];
+
+  function fetchAny(i){
+    return fetch(urls[i]).then(r=>r.ok?r.json():Promise.reject())
+      .catch(()=> i+1<urls.length ? fetchAny(i+1) : []);
+  }
+  function norm(d){
+    if (Array.isArray(d)) return d;
+    if (d && Array.isArray(d.items)) return d.items;
+    if (d && Array.isArray(d.entries)) return d.entries;
+    return [];
+  }
+  function urlFor(x){ return x.url || `./${x.id}/index.html`; }
+  function has(x,k,v){ v=v.toLowerCase(); const a=(x[k]||[]).map(s=>String(s).toLowerCase()); return a.includes(v); }
+
+  function render(items){
+    const q = (qEl.value||'').trim();
+    const isFilter = /^(tag|cluster):/i.test(q);
+    const needle = q.replace(/^(tag|cluster):/i,'').trim().toLowerCase();
+
+    const out = (q? items.filter(it=>{
+      if (isFilter && q.toLowerCase().startsWith('tag:'))     return has(it,'tags',needle);
+      if (isFilter && q.toLowerCase().startsWith('cluster:')) return String(it.cluster||'').toLowerCase()===needle;
+      const hay = [it.title,it.summary,(it.tags||[]).join(' '),it.cluster||''].join(' ').toLowerCase();
+      return hay.includes(needle);
+    }) : items);
+
+    list.innerHTML = out.map(it =>
+      `<li><a href="${urlFor(it)}">${it.title||it.id}</a> <span class="sum">${it.summary||''}</span></li>`
+    ).join('') || '<li>— No matches —</li>';
+  }
+
+  fetchAny(0).then(norm).then(items=>{
+    const params = new URLSearchParams(location.search);
+    qEl.value = params.get('q') || '';
+    render(items);
+    qEl.addEventListener('input', ()=>render(items));
+    window.addEventListener('keydown', ev=>{
+      if (ev.key === '/')     { ev.preventDefault(); qEl.focus(); qEl.select(); }
+      if (ev.key === 'Escape'){ qEl.value=''; qEl.blur(); render(items); }
+    });
+  }).catch(e=>{
+    list.innerHTML = '<li>Failed to load index.</li>';
+    console.error('Encyclopedia index error', e);
+  });
+})();
+</script>
 </body></html>

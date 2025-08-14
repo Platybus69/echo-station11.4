@@ -1,5 +1,7 @@
 [
   {
+    "id": "es-000-echo-station-overview",
+    "slug": "es-000-echo-station-overview",
     "title": "Echo Station Overview · Echo Station Encyclopedia",
     "url": "./es-000-echo-station-overview/index.html",
     "summary": "",
@@ -7,6 +9,8 @@
     "cluster": ""
   },
   {
+    "id": "es-010-glome-basics",
+    "slug": "es-010-glome-basics",
     "title": "Glome Basics (S³) · Echo Station Encyclopedia",
     "url": "./es-010-glome-basics/index.html",
     "summary": "",
@@ -14,6 +18,8 @@
     "cluster": ""
   },
   {
+    "id": "es-020-tesseract-to-glome",
+    "slug": "es-020-tesseract-to-glome",
     "title": "Tesseract → Glome (Migration Notes) · Echo Station Encyclopedia",
     "url": "./es-020-tesseract-to-glome/index.html",
     "summary": "",
@@ -21,6 +27,8 @@
     "cluster": ""
   },
   {
+    "id": "es-030-spiral-reap-glyph",
+    "slug": "es-030-spiral-reap-glyph",
     "title": "3-Pass REAP (Inside-Out) · Echo Station Encyclopedia",
     "url": "./es-030-spiral-reap-glyph/index.html",
     "summary": "",

@@ -1,0 +1,4 @@
+- fix: index stops treating cache-buster (?v=...) as a filter; show all entries by default.
+- fix: normalize FEED link to `<project>/feed.json`.
+- fix: ensure entry anchors use concrete hrefs (fallback to data-url).
+- no layout/theme changes; sitemap & feed remain valid; .nojekyll present.

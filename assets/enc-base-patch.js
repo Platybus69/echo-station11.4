@@ -1,24 +1,31 @@
+/* Echo Station: minimal runtime hardening for encyclopedia pages */
 (function () {
-  function basePath() {
-    // Prefer canonical if present, else derive from current path
-    try {
-      const c = document.querySelector('link[rel="canonical"]');
-      if (c && c.href) return new URL(c.href).pathname.replace(/index\.html?$/,'').replace(/\/?$/,'/') ;
-    } catch(e){}
-    const p = location.pathname;
-    const i = p.indexOf('/encyclopedia/');
-    return (i>=0 ? p.slice(0, i+14) : p).replace(/\/?$/,'/') + 'encyclopedia/';
-  }
-  const ENC = basePath();                  // e.g. /echo-station11.4/encyclopedia/
-  const WANT = new Set(['search.json','index.json','tags.json','clusters.json']);
-  const orig = window.fetch;
-  window.fetch = function(input, init){
-    try{
-      if (typeof input === 'string') {
-        const last = input.split('/').pop();
-        if (WANT.has(last)) input = ENC + last;
-      }
-    }catch(e){}
-    return orig.call(this, input, init);
-  };
+  // 1) Ignore cache-buster (?v=...) unless a real search param (?q=...) exists.
+  try {
+    const params = new URLSearchParams(location.search);
+    if (params.has('v') && !params.has('q')) {
+      history.replaceState(null, "", location.pathname); // drop ?v to show all entries
+    }
+  } catch (_) {}
+
+  // 2) Normalize the FEED link to the site root under this project.
+  try {
+    const a = document.querySelector('a[href^="feed"], a[href="/feed"], a[href^="./feed"], a[href$="feed.json"]');
+    if (a) {
+      // compute "/<user>/<repo>/" prefix from current path, then append feed.json
+      const parts = location.pathname.split('/').filter(Boolean);
+      const idx = parts.indexOf('encyclopedia');
+      const base = '/' + parts.slice(0, idx >= 0 ? idx : parts.length).join('/') + '/';
+      a.setAttribute('href', base + 'feed.json');
+    }
+  } catch (_) {}
+
+  // 3) If the UI rendered anchors with a data-url, make sure href isn’t empty/#.
+  try {
+    document.querySelectorAll('a[data-url]').forEach(a => {
+      const u = a.getAttribute('data-url');
+      const h = a.getAttribute('href') || '';
+      if (u && (h === '' || h === '#')) a.setAttribute('href', u);
+    });
+  } catch (_) {}
 })();

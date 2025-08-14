@@ -1,0 +1,47 @@
+[
+  {
+    "title": "Echo Station Overview",
+    "url": "#",
+    "summary": "High-level overview of Echo Station as a dark, no-flash, recursive encyclopaedia driven by glyphs and glome-oriented geometry.",
+    "tags": [
+      "glyphs",
+      "lattice",
+      "core"
+    ],
+    "cluster": "echo-station"
+  },
+  {
+    "title": "Glome Basics (S³)",
+    "url": "#",
+    "summary": "What we need from the 3-sphere (S³) for organizing glyph lattices—no hard proofs, just operational handles for navigation and projection.",
+    "tags": [
+      "stereographic",
+      "hopf",
+      "lattice"
+    ],
+    "cluster": "glome-s3"
+  },
+  {
+    "title": "Tesseract → Glome (Migration Notes)",
+    "url": "#",
+    "summary": "Practical notes for migrating lattice logic from a tesseract backbone to an S³ (glome) substrate using Hopf traversal and stereographic views.",
+    "tags": [
+      "tesseract",
+      "hopf",
+      "stereographic",
+      "spiral-engine"
+    ],
+    "cluster": "glome-s3"
+  },
+  {
+    "title": "3-Pass REAP (Inside-Out)",
+    "url": "#",
+    "summary": "A recursion-first pass pattern (out→in→out) that reconciles local glyph states with global lattice intent and prevents chaotic discovery loops.",
+    "tags": [
+      "glyphs",
+      "lattice",
+      "coherence"
+    ],
+    "cluster": "spiral-engine"
+  }
+]

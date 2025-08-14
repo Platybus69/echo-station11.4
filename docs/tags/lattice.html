@@ -1,1 +1,27 @@
-<!doctype html><meta charset=utf-8><style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel=stylesheet href=../assets/style.css><body class=dark><main><h1>Tag: #lattice</h1><ul><li><a href=../encyclopedia/es-000-echo-station-overview/index.html>Echo Station Overview</a></li><li><a href=../encyclopedia/es-010-glome-basics/index.html>Glome Basics (S³)</a></li><li><a href=../encyclopedia/es-030-spiral-reap-glyph/index.html>3-Pass REAP (Inside-Out)</a></li></ul></main>
+<!doctype html><meta charset=utf-8><style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel=stylesheet href=../assets/style.css><body class=dark><main><h1>Tag: #lattice</h1><ul><li><a href=../encyclopedia/es-000-echo-station-overview/index.html>Echo Station Overview</a></li><li><a href=../encyclopedia/es-010-glome-basics/index.html>Glome Basics (S³)</a></li><li><a href=../encyclopedia/es-030-spiral-reap-glyph/index.html>3-Pass REAP (Inside-Out)</a></li></ul></main><script id="enc-base-patch">
+(function(){
+  try{
+    // Compute base: '/<repo>' for GitHub project pages; '' for user root.
+    var segs = location.pathname.split('/').filter(Boolean);
+    var base = segs.length ? '/' + segs[0] : '';
+
+    function fix(u){
+      if(!u) return u;
+      if(/^(https?:|mailto:|data:|#)/i.test(u)) return u; // leave externals
+      if(u.startsWith('/')) return base + u;              // fix absolute-to-root
+      return u;                                           // leave relative
+    }
+
+    // href/src on common elements
+    [['a','href'],['link','href'],['script','src'],['img','src'],['source','src']]
+      .forEach(function(pair){
+        var tag=pair[0], attr=pair[1];
+        document.querySelectorAll(tag+'['+attr+']').forEach(function(el){
+          var v = el.getAttribute(attr);
+          var f = fix(v);
+          if(f !== v) el.setAttribute(attr, f);
+        });
+      });
+  }catch(e){ console && console.warn && console.warn('enc-base-patch:', e); }
+})();
+</script>

@@ -4,6 +4,33 @@
 <link rel="canonical" href="./index.html">
 <style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style>
 <link rel="stylesheet" href="../../assets/style.css">
+<script id="enc-base-patch">
+(function(){
+  try{
+    // Compute base: '/<repo>' for GitHub project pages; '' for user root.
+    var segs = location.pathname.split('/').filter(Boolean);
+    var base = segs.length ? '/' + segs[0] : '';
+
+    function fix(u){
+      if(!u) return u;
+      if(/^(https?:|mailto:|data:|#)/i.test(u)) return u; // leave externals
+      if(u.startsWith('/')) return base + u;              // fix absolute-to-root
+      return u;                                           // leave relative
+    }
+
+    // href/src on common elements
+    [['a','href'],['link','href'],['script','src'],['img','src'],['source','src']]
+      .forEach(function(pair){
+        var tag=pair[0], attr=pair[1];
+        document.querySelectorAll(tag+'['+attr+']').forEach(function(el){
+          var v = el.getAttribute(attr);
+          var f = fix(v);
+          if(f !== v) el.setAttribute(attr, f);
+        });
+      });
+  }catch(e){ console && console.warn && console.warn('enc-base-patch:', e); }
+})();
+</script>
 </head><body class="dark">
 <header><main>
   <div style="display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 0">

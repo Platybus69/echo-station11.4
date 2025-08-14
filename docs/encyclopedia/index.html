@@ -1,131 +1,44 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Echo Station · Encyclopedia</title>
-<style id="inline-dark-fallback">
-  :root { color-scheme: dark; }
-  body.dark { background:#0b0d10; color:#e6e6e6; font:15px/1.45 system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
-  a{ color:#8cc8ff; text-decoration:none } a:hover{text-decoration:underline}
-  header{ position:sticky; top:0; background:#0b0d10; padding:14px 16px; border-bottom:1px solid #1b1f24 }
-  main{ max-width:900px; margin:24px auto; padding:0 16px }
-  #q{ width:100%; padding:12px 12px; background:#0f1317; color:#e6e6e6; border:1px solid #1b1f24; border-radius:8px }
-  ul#list{ list-style:none; margin:18px 0 40px; padding:0 }
-  ul#list li{ padding:10px 6px; border-bottom:1px solid #161a1f }
-  ul#list li .sum{ display:block; color:#9aa4af; margin-top:4px }
-  .muted{ color:#889099 }
-  .pill{ font:12px/1.2; padding:2px 6px; border:1px solid #27303a; border-radius:999px; color:#9aa4af; }
-</style>
-<link rel="canonical" href="./index.html"/>
-</head>
-<body class="dark">
-<header>
-  <strong>Echo Station · Encyclopedia</strong>
-  <span class="pill" style="float:right;margin-top:2px">feed</span>
-</header>
-<main>
-  <input id="q" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" autofocus>
-  <ul id="list"><li class="muted">Loading…</li></ul>
-</main>
-<script>
+<!doctype html><html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Echo Station Encyclopedia</title>
+<style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel="stylesheet" href="../assets/style.css">
+<link rel="search" type="application/opensearchdescription+xml" href="../opensearch.xml" title="Echo Station Search">
+<script id="enc-base-patch">
 (function(){
-  const base = (()=>{
-    const p = location.pathname;
-    const i = p.indexOf('/encyclopedia/');
-    return i>=0 ? p.slice(0, i) : '';
-  })();
-  const paths = [
-    `${base}/encyclopedia/search.json?v=${Date.now()}`,
-    `${base}/encyclopedia/index.json?v=${Date.now()}`
-  ];
-  const qEl   = document.getElementById('q');
-  const list  = document.getElementById('list');
-  const uParams = new URLSearchParams(location.search);
-  qEl.value = uParams.get('q') || '';
+  try{
+    // Compute base: '/<repo>' for GitHub project pages; '' for user root.
+    var segs = location.pathname.split('/').filter(Boolean);
+    var base = segs.length ? '/' + segs[0] : '';
 
-  const normalize = (data)=>{
-    if (Array.isArray(data)) return data;
-    if (data && Array.isArray(data.items)) return data.items;
-    if (data && Array.isArray(data.entries)) return data.entries;
-    if (data && Array.isArray(data.results)) return data.results;
-    return [];
-  };
-
-  const urlFor = (it)=>{
-    const u = (it.url || it.href || '').replace(/^\.\//,'');
-    if (!u) return '#';
-    if (/^https?:\/\//i.test(u)) return u;
-    return `${base}/${u}`;
-  };
-
-  const has = (arr, v)=>{
-    const L = (arr||[]).map(x=>String(x).toLowerCase());
-    return L.includes(String(v).toLowerCase());
-  };
-
-  const match = (it, q)=>{
-    if (!q) return true;
-    const parts = q.trim().split(/\s+/);
-    const title = String(it.title||it.id||'').toLowerCase();
-    const summary = String(it.summary||'').toLowerCase();
-    const cluster = String(it.cluster||'').toLowerCase();
-    const tags = (it.tags||[]).map(t=>String(t).toLowerCase());
-    return parts.every(p=>{
-      const s = p.toLowerCase();
-      if (s.startsWith('tag:'))     return has(tags, s.slice(4));
-      if (s.startsWith('cluster:')) return cluster.includes(s.slice(8));
-      return title.includes(s) || summary.includes(s);
-    });
-  };
-
-  const render = (rows)=>{
-    const q = qEl.value.trim();
-    const filtered = rows.filter(r=>match(r, q));
-    if (!filtered.length){
-      list.innerHTML = '<li class="muted">No results</li>';
-    } else {
-      list.innerHTML = filtered.map(it=>{
-        const u = urlFor(it);
-        const t = (it.title || it.id || u).replace(/</g,'&lt;');
-        const s = it.summary ? `<span class="sum">${String(it.summary).replace(/</g,'&lt;')}</span>` : '';
-        return `<li><a href="${u}">${t}</a>${s}</li>`;
-      }).join('');
+    function fix(u){
+      if(!u) return u;
+      if(/^(https?:|mailto:|data:|#)/i.test(u)) return u; // leave externals
+      if(u.startsWith('/')) return base + u;              // fix absolute-to-root
+      return u;                                           // leave relative
     }
-    // keep ?q in the URL for deep links
-    const url = new URL(location);
-    if (q) url.searchParams.set('q', q); else url.searchParams.delete('q');
-    history.replaceState(null, '', url);
-  };
 
-  function loadFirst(paths){
-    return new Promise((resolve, reject)=>{
-      let done=false, lastErr=null;
-      paths.forEach(p=>{
-        fetch(p, {cache:'no-store'}).then(r=>{
-          if (!r.ok) throw new Error(p+' '+r.status);
-          return r.json();
-        }).then(j=>{
-          if (!done){ done=true; resolve(j); }
-        }).catch(e=>{ lastErr=e; if (!done && p===paths[paths.length-1]) reject(lastErr); });
+    // href/src on common elements
+    [['a','href'],['link','href'],['script','src'],['img','src'],['source','src']]
+      .forEach(function(pair){
+        var tag=pair[0], attr=pair[1];
+        document.querySelectorAll(tag+'['+attr+']').forEach(function(el){
+          var v = el.getAttribute(attr);
+          var f = fix(v);
+          if(f !== v) el.setAttribute(attr, f);
+        });
       });
-    });
-  }
-
-  loadFirst(paths).then(data=>{
-    const rows = normalize(data);
-    window._ES_ROWS = rows; // for quick debugging
-    render(rows);
-    qEl.addEventListener('input', ()=>render(rows));
-    window.addEventListener('keydown', ev=>{
-      if (ev.key === '/'){ ev.preventDefault(); qEl.focus(); qEl.select(); }
-      if (ev.key === 'Escape'){ qEl.value=''; qEl.blur(); render(rows); }
-    });
-  }).catch(err=>{
-    console.error('Failed to load index data:', err);
-    list.innerHTML = '<li class="muted">Failed to load index data</li>';
-  });
+  }catch(e){ console && console.warn && console.warn('enc-base-patch:', e); }
 })();
 </script>
-</body>
-</html>
+</head><body class="dark"><header><main>
+  <div style="padding:12px 0;display:flex;gap:12px;align-items:center;justify-content:space-between">
+    <strong>Echo Station · Encyclopedia</strong>
+    <a class="small" href="../feed.json">feed</a>
+  </div>
+  <input class="search" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" />
+</main></header><main>
+  <div id="search-results" class="grid"></div>
+</main>
+<footer><main class="small">Type <code>/</code> to focus search · <code>Esc</code> to clear</main></footer>
+<script src="../assets/search.js"></script>
+</body></html>

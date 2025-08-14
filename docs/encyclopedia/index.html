@@ -1,59 +1,17 @@
-<!doctype html><html lang="en"><head>
+<!doctype html><html><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Encyclopedia — Echo Station</title>
-<style id="inline-dark-fallback">
-  :root{color-scheme:dark light} html,body{margin:0;background:#0b0d10;color:#d7dde8;font:16px/1.45 system-ui,Segoe UI,Roboto}
-  a{color:#9ad0ff;text-decoration:none} a:hover{text-decoration:underline}
-  header{position:sticky;top:0;background:#0b0d10f2;backdrop-filter:saturate(1.2) blur(6px);border-bottom:1px solid #1b2330}
-  .wrap{max-width:1000px;margin:0 auto;padding:16px}
-  input[type=search]{width:100%;padding:10px 12px;border:1px solid #2b3548;background:#0f1218;color:#e6eefb;border-radius:8px}
-  .pill{display:inline-block;padding:.2rem .5rem;border:1px solid #2b3548;border-radius:999px;margin-right:.25rem;font-size:.8rem;color:#a9b7d0}
-  ul{list-style:none;padding-left:0;margin:10px 0 40px}
-  li{padding:10px 0;border-bottom:1px solid #162031}
-  .meta{font-size:.9rem;color:#9fb0cc}
-</style>
-</head><body class="dark">
-<header><div class="wrap">
-  <h1 style="margin:.2rem 0 0">Encyclopedia</h1>
-  <p style="margin:.2rem 0 1rem;color:#9fb0cc">Search & filter entries (e.g. <code>tag:glyphs</code> or <code>cluster:glome-s3</code>)</p>
-  <input id="q" type="search" placeholder="Type to search…  (Press / to focus, Esc to clear)">
-</div></header>
-<main><div class="wrap"><ul id="list"></ul></div></main>
-<script>
-const $ = sel => document.querySelector(sel);
-const list = $("#list"), q = $("#q");
-const params = new URLSearchParams(location.search);
-q.value = params.get("q") || "";
-fetch("./search.json").then(r=>r.json()).then(data=>{
-  const items = data.items || data;
-  function matches(entry, query){
-    if(!query) return true;
-    const parts = query.trim().toLowerCase().split(/\s+/);
-    return parts.every(p=>{
-      if(p.startsWith("tag:")) return (entry.tags||[]).includes(p.slice(4));
-      if(p.startsWith("cluster:")) return (entry.cluster||"")===p.slice(8);
-      const hay = [entry.title, entry.summary, ...(entry.tags||[]), entry.cluster||""].join(" ").toLowerCase();
-      return hay.includes(p);
-    });
-  }
-  function render(){
-    const query = q.value;
-    const filtered = items.filter(e=>matches(e, query))
-                          .sort((a,b)=> (a.title||"").localeCompare(b.title||""));
-    list.innerHTML = filtered.map(e=>{
-      const tags = (e.tags||[]).map(t=>`<span class="pill">#${t}</span>`).join(" ");
-      const cl = e.cluster ? `<span class="pill">${e.cluster}</span>` : "";
-      return `<li>
-        <a href="${e.url||e.slug||'#'}"><strong>${e.title||e.slug}</strong></a>
-        <div class="meta">${cl} ${tags}</div>
-        <div>${(e.summary||"").replace(/</g,"&lt;")}</div>
-      </li>`;
-    }).join("");
-    const u = new URL(location.href); if(query) u.searchParams.set("q",query); else u.searchParams.delete("q"); history.replaceState(null,"",u);
-  }
-  q.addEventListener("input", render);
-  window.addEventListener("keydown", ev=>{ if(ev.key==="/"){ev.preventDefault(); q.focus(); q.select();} if(ev.key==="Escape"){q.value=""; q.blur(); render();}});
-  render();
-});
-</script>
+<title>Echo Station Encyclopedia</title>
+<style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel="stylesheet" href="../assets/style.css">
+<link rel="search" type="application/opensearchdescription+xml" href="../opensearch.xml" title="Echo Station Search">
+</head><body class="dark"><header><main>
+  <div style="padding:12px 0;display:flex;gap:12px;align-items:center;justify-content:space-between">
+    <strong>Echo Station · Encyclopedia</strong>
+    <a class="small" href="../feed.json">feed</a>
+  </div>
+  <input class="search" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" />
+</main></header><main>
+  <div id="search-results" class="grid"></div>
+</main>
+<footer><main class="small">Type <code>/</code> to focus search · <code>Esc</code> to clear</main></footer>
+<script src="../assets/search.js"></script>
 </body></html>

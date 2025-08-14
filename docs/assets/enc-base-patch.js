@@ -1,22 +1,24 @@
 (function () {
-  // Determine /<repo>/encyclopedia/ … even if deployed under a subpath
-  const canon = document.querySelector('link[rel="canonical"]');
-  const encBase = (canon ? new URL(canon.href).pathname : location.pathname)
-    .replace(/index\.html?$/i,'').replace(/\/?$/,'/'); // e.g. /echo-station11.4/encyclopedia/
-  const toAbs = (rel) => new URL(rel, location.origin + encBase).toString();
-
-  const targets = new Set(['search.json','index.json','tags.json','clusters.json']);
-  const origFetch = window.fetch;
-  window.fetch = function (input, init) {
+  function basePath() {
+    // Prefer canonical if present, else derive from current path
     try {
+      const c = document.querySelector('link[rel="canonical"]');
+      if (c && c.href) return new URL(c.href).pathname.replace(/index\.html?$/,'').replace(/\/?$/,'/') ;
+    } catch(e){}
+    const p = location.pathname;
+    const i = p.indexOf('/encyclopedia/');
+    return (i>=0 ? p.slice(0, i+14) : p).replace(/\/?$/,'/') + 'encyclopedia/';
+  }
+  const ENC = basePath();                  // e.g. /echo-station11.4/encyclopedia/
+  const WANT = new Set(['search.json','index.json','tags.json','clusters.json']);
+  const orig = window.fetch;
+  window.fetch = function(input, init){
+    try{
       if (typeof input === 'string') {
         const last = input.split('/').pop();
-        if (targets.has(last)) {
-          // Force these to resolve under the encyclopedia base
-          input = toAbs(last);
-        }
+        if (WANT.has(last)) input = ENC + last;
       }
-    } catch (e) { /* no-op */ }
-    return origFetch.call(this, input, init);
+    }catch(e){}
+    return orig.call(this, input, init);
   };
 })();

@@ -1,0 +1,14 @@
+/* dark, no-flash fallback is also inlined per-page */
+:root{--bg:#0b0d12;--fg:#e6e6e6;--muted:#9aa4ad;--accent:#8fd3ff;}
+body.dark{background:var(--bg);color:var(--fg);font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;margin:0;}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+header{position:sticky;top:0;background:#0b0d12e6;backdrop-filter:saturate(140%) blur(6px);border-bottom:1px solid #151922}
+main{max-width:880px;margin:0 auto;padding:24px}
+code,pre{background:#0f1219;border:1px solid #171b25;border-radius:6px;padding:.2em .4em}
+.badge{display:inline-block;background:#0f1320;border:1px solid #1b2231;padding:.1em .5em;border-radius:999px;color:var(--muted);font-size:.85em;margin-right:.35em}
+.grid{display:grid;gap:16px}
+.card{border:1px solid #151a25;border-radius:12px;padding:16px;background:#0d1018}
+footer{color:var(--muted);padding:24px 0}
+input.search{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #151a25;background:#0f1219;color:var(--fg)}
+mark{background:#214a63;color:#fff}
+.small{color:var(--muted);font-size:.9em}

@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style>
+<script>
+fetch('./search.json').then(r=>r.json()).then(list=>{
+  const pick = list[Math.floor(Math.random()*list.length)];
+  location.href = './'+pick.slug+'/index.html';
+});
+</script>

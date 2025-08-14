@@ -1,0 +1,30 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "Echo Station",
+  "items": [
+    {
+      "id": "es-000-echo-station-overview",
+      "title": "Echo Station Overview",
+      "summary": "High-level overview of Echo Station as a dark, no-flash, recursive encyclopaedia driven by glyphs and glome-oriented geometry.",
+      "url": "./encyclopedia/es-000-echo-station-overview/index.html"
+    },
+    {
+      "id": "es-010-glome-basics",
+      "title": "Glome Basics (S\u00b3)",
+      "summary": "What we need from the 3-sphere (S\u00b3) for organizing glyph lattices\u2014no hard proofs, just operational handles for navigation and projection.",
+      "url": "./encyclopedia/es-010-glome-basics/index.html"
+    },
+    {
+      "id": "es-020-tesseract-to-glome",
+      "title": "Tesseract \u2192 Glome (Migration Notes)",
+      "summary": "Practical notes for migrating lattice logic from a tesseract backbone to an S\u00b3 (glome) substrate using Hopf traversal and stereographic views.",
+      "url": "./encyclopedia/es-020-tesseract-to-glome/index.html"
+    },
+    {
+      "id": "es-030-spiral-reap-glyph",
+      "title": "3-Pass REAP (Inside-Out)",
+      "summary": "A recursion-first pass pattern (out\u2192in\u2192out) that reconciles local glyph states with global lattice intent and prevents chaotic discovery loops.",
+      "url": "./encyclopedia/es-030-spiral-reap-glyph/index.html"
+    }
+  ]
+}

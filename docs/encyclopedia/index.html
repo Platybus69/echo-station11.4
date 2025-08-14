@@ -1,106 +1,17 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Echo Station · Encyclopedia</title>
-<style id="inline-dark-fallback">
-  :root{color-scheme:dark light}
-  html,body{margin:0;padding:0;background:#0b0d0e;color:#e8e8e8;font:16px/1.45 -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Inter,Helvetica,Arial,sans-serif}
-  a{color:#9ad1ff;text-decoration:none} a:hover{text-decoration:underline}
-  header{position:sticky;top:0;background:#0b0d0ef2;backdrop-filter:saturate(1.2) blur(6px);border-bottom:1px solid #1e2428}
-  .wrap{max-width:900px;margin:0 auto;padding:16px}
-  input[type=search]{width:100%;padding:10px 12px;border:1px solid #273036;border-radius:8px;background:#0f1214;color:#e8e8e8}
-  .hint{opacity:.7;font-size:12px;margin-top:6px}
-  ul#list{list-style:none;margin:16px 0;padding:0}
-  ul#list li{padding:10px 0;border-bottom:1px solid #1c2327}
-  .sum{display:block;opacity:.8;margin-top:4px;font-size:14px}
-</style>
-<link rel="canonical" href="./index.html">
-</head>
-<body class="dark">
-<header><div class="wrap">
-  <h1 style="margin:0 0 10px 0;font-size:20px">Echo Station · Encyclopedia</h1>
-  <input id="q" type="search" placeholder="Search…  (filters: tag:NAME   cluster:NAME)">
-  <div class="hint">Type <kbd>/</kbd> to focus · <kbd>Esc</kbd> to clear</div>
-</div></header>
-
-<main><div class="wrap">
-  <ul id="list"><li>Loading…</li></ul>
-</div></main>
-
-<script>
-(async function(){
-  const BASE = location.pathname.split('/encyclopedia/')[0];        // e.g. /echo-station11.4
-  const ENC  = BASE + '/encyclopedia';
-  async function loadCandidates(paths){
-    for(const p of paths){
-      try{
-        const r = await fetch(p, {cache:'no-store'});
-        if(!r.ok) continue;
-        const d = await r.json();
-        const arr = Array.isArray(d) ? d : (d.items || d.entries || d.pages || []);
-        if(arr && arr.length) return arr;
-      }catch(_){}
-    }
-    return [];
-  }
-  const items = await loadCandidates([ENC + '/search.json', ENC + '/index.json']);
-
-  // basic filter: free text + tag:NAME + cluster:NAME
-  function matches(it, q){
-    q = q.trim();
-    let ok = true;
-    const tags    = (it.tags||[]).map(s=>String(s).toLowerCase());
-    const cluster = String(it.cluster||'').toLowerCase();
-    for(const token of q.split(/\s+/)){
-      if(!token) continue;
-      if(token.startsWith('tag:')){
-        const t = token.slice(4).toLowerCase();
-        ok = ok && tags.includes(t);
-      }else if(token.startsWith('cluster:')){
-        const c = token.slice(8).toLowerCase();
-        ok = ok && cluster === c;
-      }else{
-        const hay = [it.title, it.summary, tags.join(' '), cluster].join(' ').toLowerCase();
-        ok = ok && hay.includes(token.toLowerCase());
-      }
-      if(!ok) break;
-    }
-    return ok;
-  }
-
-  const qEl   = document.getElementById('q');
-  const list  = document.getElementById('list');
-  const params = new URLSearchParams(location.search);
-  qEl.value = params.get('q') || '';
-
-  function urlFor(it){
-    if(it.url) return it.url.startsWith('http') ? it.url : (it.url.startsWith('./') ? it.url : ENC + '/' + it.url.replace(/^\//,''));
-    // fallback from id → /encyclopedia/<id>/index.html
-    if(it.id)  return ENC + '/' + it.id + '/index.html';
-    return '#';
-  }
-
-  function render(){
-    const q = qEl.value;
-    const shown = q ? items.filter(it=>matches(it,q)) : items;      // show ALL by default
-    if(!shown.length){ list.innerHTML = '<li>No results</li>'; return; }
-    list.innerHTML = shown.map(it=>{
-      const u = urlFor(it);
-      const s = it.summary ? `<span class="sum">${it.summary}</span>` : '';
-      return `<li><a href="${u}">${it.title||u}</a>${s}</li>`;
-    }).join('');
-  }
-
-  qEl.addEventListener('input', render);
-  window.addEventListener('keydown', ev=>{
-    if(ev.key === '/'){ ev.preventDefault(); qEl.focus(); qEl.select(); }
-    if(ev.key === 'Escape'){ qEl.value=''; qEl.blur(); render(); }
-  });
-
-  render();
-})();
-</script>
-</body>
-</html>
+<!doctype html><html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Echo Station Encyclopedia</title>
+<style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel="stylesheet" href="../assets/style.css">
+<link rel="search" type="application/opensearchdescription+xml" href="../opensearch.xml" title="Echo Station Search">
+</head><body class="dark"><header><main>
+  <div style="padding:12px 0;display:flex;gap:12px;align-items:center;justify-content:space-between">
+    <strong>Echo Station · Encyclopedia</strong>
+    <a class="small" href="../feed.json">feed</a>
+  </div>
+  <input class="search" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" />
+</main></header><main>
+  <div id="search-results" class="grid"></div>
+</main>
+<footer><main class="small">Type <code>/</code> to focus search · <code>Esc</code> to clear</main></footer>
+<script src="../assets/search.js"></script>
+</body></html>

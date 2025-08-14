@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc></loc></url>
+  <url><loc>https://platybus69.github.io/echo-station11.4/encyclopedia</loc></url>
+  <url><loc>https://platybus69.github.io/echo-station11.4/encyclopedia/es-000-echo-station-overview</loc></url>
+  <url><loc>https://platybus69.github.io/echo-station11.4/encyclopedia/es-010-glome-basics</loc></url>
+  <url><loc>https://platybus69.github.io/echo-station11.4/encyclopedia/es-030-spiral-reap-glyph</loc></url>
+  <url><loc>https://platybus69.github.io/echo-station11.4/encyclopedia/es-020-tesseract-to-glome</loc></url>
   <url><loc>https://platybus69.github.io/echo-station11.4/</loc></url>
   <url><loc>https://platybus69.github.io/echo-station11.4/opensearch.xml</loc></url>
   <url><loc>https://platybus69.github.io/echo-station11.4/feed.json</loc></url>

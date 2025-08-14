@@ -1,63 +1,57 @@
 (function(){
-  // Root so we can fetch /encyclopedia/search.json from any depth
-  const p = location.pathname;
-  const i = p.indexOf('/encyclopedia/');
-  const ENC_ROOT = i >= 0 ? p.slice(0, i) : '';
-  const SEARCH_JSON = ENC_ROOT + '/encyclopedia/search.json';
+  // Detect project base: "/" for user sites, "/repo/" for project pages
+  const BASE = (function(){
+    const segs = location.pathname.split('/').filter(Boolean);
+    return (segs.length && segs[0] !== 'encyclopedia') ? `/${segs[0]}/` : '/';
+  })();
 
-  const params = new URLSearchParams(location.search);
-  const qParam = params.get('q') || '';
-
-  const input = document.querySelector('#search, input[type="search"], [data-search-input]');
-  const box = document.getElementById('search-results');
-
-  if (input) {
-    input.value = qParam;
-    window.addEventListener('keydown', (e) => {
-      if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); input.select(); }
-    });
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') { input.value=''; render([]); history.replaceState({},'',location.pathname); }
-    });
+  async function getJSON(rel){
+    const url = rel.startsWith('http') ? rel : `${BASE}${rel.replace(/^\//,'')}`;
+    const res = await fetch(url, {cache: 'no-store'});
+    if(!res.ok) throw new Error(`Fetch ${url} -> ${res.status}`);
+    return res.json();
   }
 
-  fetch(SEARCH_JSON).then(r=>r.json()).then(index=>{
-    function tokenize(q){
-      const toks = (q||'').trim().split(/\s+/).filter(Boolean);
-      const filters = { tag:[], cluster:[] }, terms=[];
-      toks.forEach(t=>{
-        const m=t.match(/^(tag|cluster):(.+)$/i);
-        if(m) filters[m[1].toLowerCase()].push(m[2].toLowerCase());
-        else terms.push(t.toLowerCase());
+  // Wire up search box
+  const input = document.querySelector('#search input, input[type=search], input[name=q]');
+  const results = document.querySelector('#search-results');
+  const params = new URLSearchParams(location.search);
+  const q = params.get('q') || '';
+
+  if (input) {
+    input.value = q;
+    document.addEventListener('keydown', (e)=>{ if(e.key === '/') { e.preventDefault(); input.focus(); }});
+    input.addEventListener('keydown', (e)=>{ if(e.key === 'Escape'){ input.value=''; location.search=''; }});
+  }
+
+  // Highlight utility
+  function highlight(el, term){
+    if(!el || !term) return;
+    const rx = new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`,'gi');
+    el.innerHTML = el.innerHTML.replace(rx, '<mark>$1</mark>');
+  }
+
+  // 1) In-page highlight on entry pages
+  if (q && document.body.classList.contains('entry')) {
+    document.querySelectorAll('main, article').forEach(el=>highlight(el,q));
+  }
+
+  // 2) Index search: load and render hits
+  if (results) {
+    getJSON('encyclopedia/search.json').then(data=>{
+      const term = q.trim().toLowerCase();
+      const f = (s)=> (s||'').toLowerCase();
+      const hits = (data.items||[]).filter(it=>{
+        const hay = f(it.title)+' '+f(it.summary)+' '+(it.tags||[]).map(f).join(' ');
+        return term ? hay.includes(term) : true;
       });
-      return {terms,filters};
-    }
-    function match(it, terms, filters){
-      const tags=(it.tags||[]).map(x=>(''+x).toLowerCase());
-      const cluster=(it.cluster||'').toLowerCase();
-      const hay=(it.title+' '+(it.summary||'')+' '+cluster+' '+tags.join(' ')).toLowerCase();
-      if (filters.tag.length && !filters.tag.every(t=>tags.includes(t))) return false;
-      if (filters.cluster.length && !filters.cluster.includes(cluster)) return false;
-      return terms.every(t=>hay.includes(t));
-    }
-    function escRe(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
-    function highlight(text,q){ if(!q) return text||''; try { return (text||'').replace(new RegExp(escRe(q),'ig'), m=>`<mark>${m}</mark>`);} catch { return text||''; } }
-    function render(list){
-      if(!box) return;
-      box.innerHTML='';
-      list.forEach(it=>{
-        const card=document.createElement('div'); card.className='card';
-        const tagsHtml=(it.tags||[]).map(t=>`<span class="badge">#${t}</span>`).join(' ');
-        card.innerHTML = `
-          <div><a href="./${it.slug}/index.html"><strong>${highlight(it.title, input?input.value:'')}</strong></a></div>
-          <div class="small">${highlight(it.summary||'', input?input.value:'')}</div>
-          <div class="small">${it.cluster?`<span class="badge">${it.cluster}</span>`:''} ${tagsHtml}</div>
-        `;
-        box.appendChild(card);
-      });
-    }
-    function run(q){ const {terms,filters}=tokenize(q); render(index.filter(it=>match(it,terms,filters)).slice(0,200)); }
-    run(qParam);
-    if (input) input.addEventListener('input', e=>run(e.target.value));
-  }).catch(()=>{ /* ok if search not on page */ });
+      results.innerHTML = hits.map(it=>{
+        const href = `${BASE}${(it.url||'').replace(/^\.\//,'')}`;
+        return `<li><a href="${href}">${it.title||href}</a><p>${it.summary||''}</p></li>`;
+      }).join('') || '<li>No results</li>';
+    }).catch(err=>{
+      console.error(err);
+      results.innerHTML = '<li>Search unavailable</li>';
+    });
+  }
 })();

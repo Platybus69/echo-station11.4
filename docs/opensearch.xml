@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
 <ShortName>Echo Station</ShortName><Description>Search Echo Station Encyclopedia</Description>
-<Url type="text/html" template="./encyclopedia/index.html?q={searchTerms}"/>
+<Url type="text/html" template="./echo-station11.4/encyclopedia/index.html?q={searchTerms}"/>
 </OpenSearchDescription>

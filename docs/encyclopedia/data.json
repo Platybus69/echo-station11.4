@@ -1,47 +1,30 @@
 [
   {
-    "title": "Echo Station Overview",
-    "url": "#",
-    "summary": "High-level overview of Echo Station as a dark, no-flash, recursive encyclopaedia driven by glyphs and glome-oriented geometry.",
-    "tags": [
-      "glyphs",
-      "lattice",
-      "core"
-    ],
-    "cluster": "echo-station"
+    "title": "Echo Station Overview · Echo Station Encyclopedia",
+    "url": "./es-000-echo-station-overview/index.html",
+    "summary": "",
+    "tags": [],
+    "cluster": ""
   },
   {
-    "title": "Glome Basics (S³)",
-    "url": "#",
-    "summary": "What we need from the 3-sphere (S³) for organizing glyph lattices—no hard proofs, just operational handles for navigation and projection.",
-    "tags": [
-      "stereographic",
-      "hopf",
-      "lattice"
-    ],
-    "cluster": "glome-s3"
+    "title": "Glome Basics (S³) · Echo Station Encyclopedia",
+    "url": "./es-010-glome-basics/index.html",
+    "summary": "",
+    "tags": [],
+    "cluster": ""
   },
   {
-    "title": "Tesseract → Glome (Migration Notes)",
-    "url": "#",
-    "summary": "Practical notes for migrating lattice logic from a tesseract backbone to an S³ (glome) substrate using Hopf traversal and stereographic views.",
-    "tags": [
-      "tesseract",
-      "hopf",
-      "stereographic",
-      "spiral-engine"
-    ],
-    "cluster": "glome-s3"
+    "title": "Tesseract → Glome (Migration Notes) · Echo Station Encyclopedia",
+    "url": "./es-020-tesseract-to-glome/index.html",
+    "summary": "",
+    "tags": [],
+    "cluster": ""
   },
   {
-    "title": "3-Pass REAP (Inside-Out)",
-    "url": "#",
-    "summary": "A recursion-first pass pattern (out→in→out) that reconciles local glyph states with global lattice intent and prevents chaotic discovery loops.",
-    "tags": [
-      "glyphs",
-      "lattice",
-      "coherence"
-    ],
-    "cluster": "spiral-engine"
+    "title": "3-Pass REAP (Inside-Out) · Echo Station Encyclopedia",
+    "url": "./es-030-spiral-reap-glyph/index.html",
+    "summary": "",
+    "tags": [],
+    "cluster": ""
   }
 ]

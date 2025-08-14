@@ -1,81 +1,17 @@
-<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Echo Station · Encyclopedia</title>
-<style id="inline-dark-fallback">
-:root{color-scheme:dark}
-body.dark{background:#0b0d10;color:#e6e6e6;margin:0;font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,sans-serif}
-a{color:#9ad;text-decoration:none}a:hover{text-decoration:underline}
-header{position:sticky;top:0;background:#0b0d10dd;backdrop-filter:saturate(120%) blur(4px);padding:12px 16px;border-bottom:1px solid #1b2230}
-.wrap{max-width:960px;margin:0 auto;padding:16px}
-input[type=search]{width:100%;padding:10px 12px;border-radius:8px;border:1px solid #273043;background:#0f1218;color:#e6e6e6}
-ul#results{list-style:none;margin:16px 0 80px;padding:0}
-li.entry{padding:12px 8px;border-bottom:1px solid #1b2230}
-.meta{opacity:.7;font-size:.9em}
-.badges span{display:inline-block;margin-right:6px;padding:2px 6px;border:1px solid #2a3548;border-radius:6px;font-size:.78em;opacity:.8}
-</style>
-<link rel="stylesheet" href="../assets/style.css">
-<body class="dark">
-<header class="wrap">
-  <div style="display:flex;align-items:center;gap:12px;">
+<!doctype html><html><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Echo Station Encyclopedia</title>
+<style id="inline-dark-fallback">body{background:#0b0d12;color:#e6e6e6;margin:0}a{color:#8fd3ff;text-decoration:none}</style><link rel="stylesheet" href="../assets/style.css">
+<link rel="search" type="application/opensearchdescription+xml" href="../opensearch.xml" title="Echo Station Search">
+</head><body class="dark"><header><main>
+  <div style="padding:12px 0;display:flex;gap:12px;align-items:center;justify-content:space-between">
     <strong>Echo Station · Encyclopedia</strong>
-    <a href="../feed.json" style="margin-left:auto">feed</a>
+    <a class="small" href="../feed.json">feed</a>
   </div>
-  <input id="q" type="search" placeholder="Search…  (filters: tag:NAME  cluster:NAME) — Press / to focus, Esc to clear">
-</header>
-<main class="wrap">
-  <ul id="results"><li class="entry"><em>Loading…</em></li></ul>
+  <input class="search" placeholder="Search…  (filters: tag:NAME  cluster:NAME)" />
+</main></header><main>
+  <div id="search-results" class="grid"></div>
 </main>
-<script>
-(function(){
-  const list = document.getElementById('results');
-  const box  = document.getElementById('q');
-
-  function render(items){
-    list.innerHTML = items.map(x => `
-      <li class="entry">
-        <a href="${x.url}"><strong>${x.title}</strong></a><br>
-        <span class="meta">${x.summary?x.summary:''}</span>
-        <div class="badges">
-          ${x.cluster?`<span>${x.cluster}</span>`:''}
-          ${(x.tags||[]).map(t=>`<span>${t}</span>`).join('')}
-        </div>
-      </li>`).join('');
-  }
-  function norm(s){ return (s||'').toLowerCase(); }
-  function filter(data,q){
-    q=(q||'').trim(); if(!q) return data;
-    const parts=q.split(/\s+/);
-    return data.filter(x=>{
-      const t=norm(x.title), s=norm(x.summary);
-      const tags=(x.tags||[]).map(norm), cluster=norm(x.cluster||'');
-      return parts.every(p=>{
-        if(p.startsWith('tag:')) return tags.includes(norm(p.slice(4)));
-        if(p.startsWith('cluster:')) return cluster===norm(p.slice(8));
-        p=norm(p); return t.includes(p)||s.includes(p);
-      });
-    });
-  }
-  function apply(data){
-    const params=new URLSearchParams(location.search);
-    const q=params.get('q')||''; box.value=q; render(filter(data,q));
-  }
-  // keyboard UX
-  document.addEventListener('keydown', e=>{
-    if(e.key==='/' && document.activeElement!==box){ e.preventDefault(); box.focus(); }
-    if(e.key==='Escape'){ box.value=''; const u=new URL(location); u.searchParams.delete('q'); history.replaceState(null,'',u); }
-  });
-
-  fetch('data.json').then(r=>r.json()).then(data=>{
-    render(data); // show all by default
-    box.addEventListener('input', ()=>{
-      const u=new URL(location); const v=box.value.trim();
-      if(v) u.searchParams.set('q', v); else u.searchParams.delete('q');
-      history.replaceState(null,'',u);
-      render(filter(data, v));
-    });
-    apply(data);
-  }).catch(e=>{
-    list.innerHTML = '<li class="entry"><strong>Failed to load data.json</strong><br><span class="meta">'+String(e)+'</span></li>';
-  });
-})();
-</script>
+<footer><main class="small">Type <code>/</code> to focus search · <code>Esc</code> to clear</main></footer>
+<script src="../assets/search.js"></script>
 </body></html>

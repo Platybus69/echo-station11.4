@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://platybus69.github.io/echo-station11.4/sitemap.xml
